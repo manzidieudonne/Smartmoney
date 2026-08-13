@@ -109,19 +109,19 @@ export const Navbar: React.FC<NavbarProps> = ({
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 text-slate-100 shadow-md">
+    <header className="sticky top-0 z-40 bg-[#090d1a]/95 backdrop-blur-xl border-b border-amber-500/20 text-slate-100 shadow-xl shadow-slate-950/50">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
           {/* Logo & Brand */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('dashboard')}>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-emerald-500/20 active:scale-95 transition-transform">
+          <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setActiveTab('dashboard')}>
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-400 via-emerald-400 to-teal-400 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-amber-500/20 group-hover:scale-105 active:scale-95 transition-all">
               <TrendingUp className="w-6 h-6 stroke-[2.5]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-lg font-bold tracking-tight text-white">{t('appName')}</span>
-                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 uppercase tracking-widest hidden sm:inline-block">
+                <span className="text-lg font-black tracking-tight text-white group-hover:text-amber-300 transition-colors">{t('appName')}</span>
+                <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase tracking-widest hidden sm:inline-block">
                   Daily Yield
                 </span>
               </div>
@@ -136,14 +136,14 @@ export const Navbar: React.FC<NavbarProps> = ({
             {user && (
               <div 
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center gap-2 bg-slate-800/90 hover:bg-slate-800 border border-slate-700/80 px-2.5 py-1.5 rounded-xl cursor-pointer transition-all active:scale-95"
+                className="flex items-center gap-2 bg-[#121a2e] hover:bg-[#18233c] border border-amber-500/30 px-3 py-1.5 rounded-xl cursor-pointer transition-all active:scale-95 shadow-md"
               >
-                <div className="p-1 rounded-lg bg-emerald-500/20 text-emerald-400">
+                <div className="p-1 rounded-lg bg-emerald-500/20 text-emerald-300">
                   <Wallet className="w-3.5 h-3.5" />
                 </div>
                 <div className="text-right">
                   <div className="text-[9px] text-slate-400 font-semibold leading-none uppercase tracking-wider">{t('walletBalance')}</div>
-                  <div className="font-extrabold text-emerald-400 text-xs sm:text-sm leading-tight">
+                  <div className="font-black text-emerald-400 text-xs sm:text-sm leading-tight">
                     {user.balance.toLocaleString('en-US')} <span className="text-[10px]">FRW</span>
                   </div>
                 </div>

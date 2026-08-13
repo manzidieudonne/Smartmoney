@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState } from 'react';
 export const translations = {
   rw: {
     // General & Navigation
-    appName: 'InvestPro',
+    appName: 'Smart Money',
     appTagline: 'Jya imbere mu gushora imari n\'inyungu z\'iminsi icyenda',
     dashboard: 'Ibibaho',
     products: 'Ibicuruzwa',
@@ -24,7 +24,7 @@ export const translations = {
 
     // Hero & Public
     heroTitle: 'Inyungu z\'Umunsi ku Imari Yashowe',
-    heroSubtitle: 'InvestPro iguhuza n\'amapool y\'imari atanga inyungu ya buri munsi. Yakira inyungu neza n\'umutekano wizewe.',
+    heroSubtitle: 'Smart Money iguhuza n\'amapool y\'imari atanga inyungu ya buri munsi. Yakira inyungu neza n\'umutekano wizewe.',
     startInvesting: 'Tanga Imari Ubu',
     clientSignIn: 'Injira Nkumushoramari',
     featuredProducts: 'Ibicuruzwa by\'Imari Byatoranijwe',
@@ -101,7 +101,7 @@ export const translations = {
   },
   en: {
     // General & Navigation
-    appName: 'InvestPro',
+    appName: 'Smart Money',
     appTagline: 'Next-Generation High-Yield Daily Investment Platform',
     dashboard: 'Dashboard',
     products: 'Products',
@@ -122,7 +122,7 @@ export const translations = {
 
     // Hero & Public
     heroTitle: 'Automated Daily Dividends & Investment Growth',
-    heroSubtitle: 'InvestPro connects investors with curated daily profit pools. Enjoy secure multi-role workflows with Agent deposit processing and Admin-only withdrawal safeguards.',
+    heroSubtitle: 'Smart Money connects investors with curated daily profit pools. Enjoy secure multi-role workflows with Agent deposit processing and Admin-only withdrawal safeguards.',
     startInvesting: 'Start Investing Now',
     clientSignIn: 'Client Sign In',
     featuredProducts: 'Featured Investment Products',

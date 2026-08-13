@@ -59,48 +59,51 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   return (
-    <div className="bg-slate-900/90 backdrop-blur-md border border-slate-800 hover:border-slate-700/80 rounded-2xl p-5 hover:shadow-xl hover:shadow-emerald-500/5 transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
+    <div className="bg-slate-900/90 backdrop-blur-xl border border-amber-500/20 hover:border-amber-400/50 rounded-2xl p-5 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
       
-      {/* Glow highlight on hover */}
-      <div className="absolute -top-12 -right-12 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all pointer-events-none" />
+      {/* Background radial glow on hover */}
+      <div className="absolute -top-16 -right-16 w-36 h-36 bg-amber-500/10 rounded-full blur-3xl group-hover:bg-amber-500/20 transition-all pointer-events-none" />
+      <div className="absolute -bottom-16 -left-16 w-36 h-36 bg-emerald-500/10 rounded-full blur-3xl group-hover:bg-emerald-500/20 transition-all pointer-events-none" />
 
       {/* Top Tag & Header */}
       <div>
         <div className="flex items-center justify-between gap-2 mb-3">
-          <span className="text-[10px] font-extrabold text-emerald-400 uppercase tracking-wider bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
+          <span className="text-[10px] font-black text-amber-300 uppercase tracking-widest bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">
             {product.category || 'Yield Pool'}
           </span>
           {getRiskBadge()}
         </div>
 
-        <h3 className="text-lg font-black text-white group-hover:text-emerald-300 transition-colors tracking-tight">
+        <h3 className="text-lg font-black text-white group-hover:text-amber-300 transition-colors tracking-tight">
           {product.title}
         </h3>
         <p className="text-xs text-slate-400 mt-1 line-clamp-2 min-h-[32px] leading-relaxed">
           {product.description}
         </p>
 
-        {/* Investment Price & Daily Yield */}
-        <div className="my-5 p-4 rounded-xl bg-slate-950/80 border border-slate-800/80 space-y-3 shadow-inner">
+        {/* Investment Price & Daily Yield Card */}
+        <div className="my-4 p-4 rounded-xl bg-[#080d1a] border border-slate-800/90 space-y-3 shadow-inner">
           <div className="flex items-baseline justify-between">
             <span className="text-xs text-slate-400 font-medium">{t('price')}</span>
-            <span className="text-2xl font-black text-white tracking-tight">{product.price.toLocaleString('en-US')} <span className="text-xs font-bold text-slate-400">FRW</span></span>
+            <span className="text-2xl font-black gold-gradient-text tracking-tight">
+              {product.price.toLocaleString('en-US')} <span className="text-xs font-bold text-slate-400">FRW</span>
+            </span>
           </div>
 
           <div className="pt-2.5 border-t border-slate-800/80 flex items-center justify-between">
             <div className="flex items-center gap-1.5 text-xs text-slate-300 font-semibold">
-              <Zap className="w-4 h-4 text-amber-400 fill-amber-400/20" />
+              <Zap className="w-4 h-4 text-amber-400 fill-amber-400/30" />
               <span>{t('dailyProfit')}</span>
             </div>
             <div className="text-right">
               <span className="text-sm font-black text-emerald-400">+{product.dailyProfit.toLocaleString('en-US')} FRW</span>
-              <span className="text-[10px] text-emerald-500/80 block font-bold">({product.dailyProfitPercent}% / umunsi)</span>
+              <span className="text-[10px] text-emerald-300 block font-bold">({product.dailyProfitPercent}% / umunsi)</span>
             </div>
           </div>
 
           <div className="flex items-center justify-between text-xs text-slate-400 pt-1">
             <div className="flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5 text-blue-400" />
+              <Clock className="w-3.5 h-3.5 text-sky-400" />
               <span>{t('durationDays')}</span>
             </div>
             <span className="font-bold text-slate-200">{product.durationDays} Iminsi</span>
@@ -110,12 +113,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <div className="pt-2.5 border-t border-slate-800/80 flex items-center justify-between text-[11px]">
             <span className="text-slate-400 font-medium">Uburyo bw'Inyungu:</span>
             {product.profitPayoutMode === 'automatic' ? (
-              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-bold flex items-center gap-1 text-[10px]">
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 font-bold flex items-center gap-1 text-[10px]">
                 <span>⚡ Automatic</span>
                 <span className="text-[9px] text-emerald-400/80 font-normal">({product.payoutIntervalHours || 24}h)</span>
               </span>
             ) : (
-              <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20 font-bold flex items-center gap-1 text-[10px]">
+              <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 font-bold flex items-center gap-1 text-[10px]">
                 <span>🖐️ Manual Claim</span>
                 <span className="text-[9px] text-amber-400/80 font-normal">({product.payoutIntervalHours || 24}h)</span>
               </span>
@@ -154,7 +157,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         ) : (
           <button
             onClick={() => setShowModal(true)}
-            className="w-full py-3 px-4 rounded-xl bg-emerald-400 hover:bg-emerald-300 active:scale-[0.99] text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/20 cursor-pointer transition-all"
+            className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-400 via-emerald-400 to-teal-400 hover:from-amber-300 hover:to-teal-300 active:scale-[0.98] text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-xl shadow-amber-500/20 cursor-pointer transition-all"
           >
             <TrendingUp className="w-4 h-4 stroke-[2.5]" />
             {t('investNow')} ({product.price.toLocaleString('en-US')} FRW)

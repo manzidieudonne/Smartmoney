@@ -52,10 +52,10 @@ export default function App() {
   // Toast Notification
   const [toast, setToast] = useState(null);
 
-  const showToast = (type, message) => {
+  const showToast = useCallback((type, message) => {
     setToast({ type, message });
     setTimeout(() => setToast(null), 4000);
-  };
+  }, []);
 
   const handleOpenPwaModal = async () => {
     if (deferredPrompt) {
@@ -164,16 +164,16 @@ export default function App() {
 
     init();
 
-    // Fallback safety timer: ensure loading never hangs past 2.5 seconds
+    // Safety fallback timer: guarantee loading spinner disappears within 1.5s max
     const safetyTimer = setTimeout(() => {
       if (isMounted) setLoading(false);
-    }, 2500);
+    }, 1500);
 
     return () => {
       isMounted = false;
       clearTimeout(safetyTimer);
     };
-  }, [loadProducts, loadUserData]);
+  }, []); // Run ONCE on mount
 
   // Periodic Polling for Data & Notification Refresh (Every 4 Seconds + Tab Focus)
   const currentUserId = user?.id;
@@ -526,7 +526,7 @@ export default function App() {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
             <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p className="text-xs font-semibold text-slate-400">Loading InvestPro Engine...</p>
+            <p className="text-xs font-semibold text-slate-400">Loading Smart Money Engine...</p>
           </div>
         ) : profileOpen && user ? (
           <ProfileSettings
@@ -539,10 +539,14 @@ export default function App() {
           <div className="space-y-8 sm:space-y-12">
             
             {/* Hero Banner */}
-            <div className="relative bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 border border-slate-800 rounded-2xl sm:rounded-3xl p-5 sm:p-12 overflow-hidden shadow-2xl">
-              <div className="max-w-3xl space-y-6">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                  <Sparkles className="w-3.5 h-3.5" /> High-Yield Daily Return Platform
+            <div className="relative bg-gradient-to-br from-[#0c1222] via-[#0f172a] to-[#080d1a] border border-amber-500/20 rounded-3xl p-6 sm:p-12 overflow-hidden shadow-2xl">
+              {/* Radial Glow highlights */}
+              <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+
+              <div className="relative max-w-3xl space-y-6">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-black bg-amber-500/10 text-amber-300 border border-amber-500/30 shadow-sm">
+                  <Sparkles className="w-4 h-4 text-amber-400" /> High-Yield Daily Return Platform
                 </div>
 
                 <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
@@ -556,39 +560,59 @@ export default function App() {
                 <div className="flex items-center gap-3 pt-2 flex-wrap">
                   <button
                     onClick={() => { setAuthMode('register'); setAuthModalOpen(true); }}
-                    className="px-6 py-3 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-bold text-sm flex items-center gap-2 shadow-lg shadow-emerald-500/20 transition-all active:scale-95"
+                    className="px-7 py-3.5 rounded-xl bg-gradient-to-r from-amber-400 via-emerald-400 to-teal-400 hover:from-amber-300 hover:to-teal-300 text-slate-950 font-black text-sm flex items-center gap-2 shadow-xl shadow-amber-500/20 transition-all active:scale-95 cursor-pointer"
                   >
-                    {t('startInvesting')} <ArrowRight className="w-4 h-4" />
+                    {t('startInvesting')} <ArrowRight className="w-4 h-4 stroke-[3]" />
                   </button>
                   <button
                     onClick={() => { setAuthMode('login'); setAuthModalOpen(true); }}
-                    className="px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold text-sm transition-all active:scale-95"
+                    className="px-6 py-3.5 rounded-xl bg-[#121a2e] hover:bg-[#18233c] border border-slate-700/80 text-slate-100 font-bold text-sm transition-all active:scale-95 cursor-pointer"
                   >
                     {t('clientSignIn')}
                   </button>
                 </div>
               </div>
+
+              {/* Live Statistics Bar */}
+              <div className="mt-10 pt-8 border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="p-3.5 rounded-2xl bg-[#070c18] border border-amber-500/15">
+                  <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Yield y'Umunsi</div>
+                  <div className="text-base sm:text-lg font-black text-amber-400 mt-0.5">8% - 15%</div>
+                </div>
+                <div className="p-3.5 rounded-2xl bg-[#070c18] border border-emerald-500/15">
+                  <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Ayasubijwe Abasomyi</div>
+                  <div className="text-base sm:text-lg font-black text-emerald-400 mt-0.5">150,000,000+ FRW</div>
+                </div>
+                <div className="p-3.5 rounded-2xl bg-[#070c18] border border-amber-500/15">
+                  <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Kubitsa Kuri Agent</div>
+                  <div className="text-base sm:text-lg font-black text-amber-300 mt-0.5">⚡ Instant MoMo</div>
+                </div>
+                <div className="p-3.5 rounded-2xl bg-[#070c18] border border-sky-500/15">
+                  <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Umutekano</div>
+                  <div className="text-base sm:text-lg font-black text-sky-400 mt-0.5">100% Encrypted</div>
+                </div>
+              </div>
             </div>
 
             {/* Login Required Notice for Products */}
-            <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-8 text-center max-w-2xl mx-auto space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
+            <div className="bg-[#0b1120]/90 backdrop-blur-xl border border-amber-500/20 rounded-3xl p-8 text-center max-w-2xl mx-auto space-y-4 shadow-xl">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mx-auto">
                 <Lock className="w-6 h-6" />
               </div>
-              <h2 className="text-xl font-bold text-white">Gukoresha Ibyicuruzwa n'Ishoramari</h2>
-              <p className="text-xs text-slate-400 max-w-md mx-auto">
+              <h2 className="text-xl font-black text-white">Gukoresha Ibyicuruzwa n'Ishoramari</h2>
+              <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
                 Mbere yo kureba ibicuruzwa n'amapulane yo gushora imari, ugomba kwinjira mu ikonte yawe cyangwa ukabayandikisha gishya.
               </p>
               <div className="pt-2 flex items-center justify-center gap-3">
                 <button
                   onClick={() => { setAuthMode('login'); setAuthModalOpen(true); }}
-                  className="px-5 py-2.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-bold text-xs transition-all shadow-md active:scale-95"
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-xs transition-all shadow-md active:scale-95 cursor-pointer"
                 >
                   {t('login')}
                 </button>
                 <button
                   onClick={() => { setAuthMode('register'); setAuthModalOpen(true); }}
-                  className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs transition-all active:scale-95"
+                  className="px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs transition-all active:scale-95 cursor-pointer"
                 >
                   {t('register')}
                 </button>
