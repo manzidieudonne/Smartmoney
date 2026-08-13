@@ -179,12 +179,16 @@ export const AdminDashboard = ({
     if (!deletingUserConfirm) return;
     setDeletingUserLoading(true);
     try {
+      const targetId = String(deletingUserConfirm.id || deletingUserConfirm._id || '').trim();
       if (onDeleteUser) {
-        await onDeleteUser(deletingUserConfirm.id);
+        await onDeleteUser(targetId);
       } else {
-        await api.admin.deleteUser(deletingUserConfirm.id);
+        await api.admin.deleteUser(targetId);
       }
-      setLocalUsers(prev => prev.filter(u => u.id !== deletingUserConfirm.id));
+      setLocalUsers(prev => prev.filter(u => {
+        const uId = String(u.id || u._id || '').trim();
+        return uId !== targetId;
+      }));
       setDeletingUserConfirm(null);
     } catch (err) {
       alert(err.message || 'Gusiba umukoresha byananiwe');
@@ -881,7 +885,7 @@ export const AdminDashboard = ({
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
-                  Abakiriya ({localUsers.filter(u => u.role === 'client').length})
+                  Abakiriya ({localUsers.filter(u => String(u?.role || 'client').toLowerCase().trim() === 'client').length})
                 </button>
                 <button
                   type="button"
@@ -892,7 +896,7 @@ export const AdminDashboard = ({
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
-                  Aba Agent ({localUsers.filter(u => u.role === 'agent').length})
+                  Aba Agent ({localUsers.filter(u => String(u?.role || '').toLowerCase().trim() === 'agent').length})
                 </button>
                 <button
                   type="button"
@@ -903,7 +907,7 @@ export const AdminDashboard = ({
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
-                  Aba Admin ({localUsers.filter(u => u.role === 'admin').length})
+                  Aba Admin ({localUsers.filter(u => String(u?.role || '').toLowerCase().trim() === 'admin').length})
                 </button>
               </div>
             </div>
@@ -946,14 +950,25 @@ export const AdminDashboard = ({
               <tbody className="divide-y divide-slate-800/60">
                 {(() => {
                   const filteredUsersList = localUsers.filter(u => {
-                    const matchesRole = userRoleFilter === 'all' || u.role === userRoleFilter;
+                    if (!u) return false;
+                    const roleStr = String(u.role || 'client').toLowerCase().trim();
+                    const matchesRole = userRoleFilter === 'all' || roleStr === userRoleFilter.toLowerCase().trim();
                     const q = userSearchQuery.toLowerCase().trim();
-                    const matchesSearch = !q || 
-                      u.fullName.toLowerCase().includes(q) ||
-                      u.email.toLowerCase().includes(q) ||
-                      (u.phone && u.phone.toLowerCase().includes(q)) ||
-                      (u.agentCode && u.agentCode.toLowerCase().includes(q)) ||
-                      (u.referralCode && u.referralCode.toLowerCase().includes(q));
+                    if (!q) return matchesRole;
+
+                    const fullName = String(u.fullName || '').toLowerCase();
+                    const email = String(u.email || '').toLowerCase();
+                    const phone = String(u.phone || '').toLowerCase();
+                    const agentCode = String(u.agentCode || '').toLowerCase();
+                    const referralCode = String(u.referralCode || '').toLowerCase();
+
+                    const matchesSearch =
+                      fullName.includes(q) ||
+                      email.includes(q) ||
+                      phone.includes(q) ||
+                      agentCode.includes(q) ||
+                      referralCode.includes(q);
+
                     return matchesRole && matchesSearch;
                   });
 

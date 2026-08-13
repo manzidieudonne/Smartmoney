@@ -436,9 +436,12 @@ class DBManager {
 
     let referralCount = 0;
     if (this.data && this.data.users) {
+      const uId = String(user.id || user._id || '').trim();
       referralCount = this.data.users.filter(u => {
-        if (u.id === user.id) return false;
-        if (u.referredBy === user.id) return true;
+        if (!u) return false;
+        const currentId = String(u.id || u._id || '').trim();
+        if (currentId === uId) return false;
+        if (u.referredBy && String(u.referredBy).trim() === uId) return true;
         if (user.agentCode && u.agentCode === user.agentCode) return true;
         if (user.referralCode && (u.referredBy === user.referralCode || u.agentCode === user.referralCode)) return true;
         return false;
@@ -448,6 +451,7 @@ class DBManager {
     const { passwordHash, ...safe } = user;
     return {
       ...safe,
+      role: String(safe.role || 'client').toLowerCase().trim(),
       referralCount
     };
   }
@@ -528,7 +532,7 @@ class DBManager {
       fullName: userData.fullName,
       phone: userData.phone,
       phoneClean,
-      role: userData.role || 'client',
+      role: String(userData.role || 'client').toLowerCase().trim(),
       balance: 0,
       bonusBalance: 0,
       referralCode: userReferralCode,
@@ -538,7 +542,8 @@ class DBManager {
       createdAt: new Date().toISOString()
     };
 
-    this.data.users.push(newUser);
+    // Unshift so newly registered users appear AT THE TOP of the user list
+    this.data.users.unshift(newUser);
     this.saveData();
     this.syncMongoDoc(UserModel, userId, newUser);
 
@@ -546,12 +551,16 @@ class DBManager {
   }
 
   updateUser(id, updates) {
-    const userIndex = this.data.users.findIndex(u => u.id === id);
+    const targetId = String(id || '').trim();
+    const userIndex = this.data.users.findIndex(u => String(u.id || u._id || '').trim() === targetId);
     if (userIndex === -1) return undefined;
 
     const current = this.data.users[userIndex];
     if (updates.phone) {
       updates.phoneClean = this.cleanPhone(updates.phone);
+    }
+    if (updates.role) {
+      updates.role = String(updates.role).toLowerCase().trim();
     }
 
     const updated = {
@@ -561,27 +570,35 @@ class DBManager {
 
     this.data.users[userIndex] = updated;
     this.saveData();
-    this.syncMongoDoc(UserModel, id, updated);
+    this.syncMongoDoc(UserModel, current.id || targetId, updated);
 
     return this.toSafeUser(updated);
   }
 
   deleteUser(id) {
+    if (!id) return false;
+    const targetId = String(id).trim();
+
     const initialCount = this.data.users.length;
-    this.data.users = this.data.users.filter(u => u.id !== id);
+    this.data.users = this.data.users.filter(u => {
+      const uId = String(u.id || '').trim();
+      const uMongoId = u._id ? String(u._id).trim() : '';
+      return uId !== targetId && uMongoId !== targetId;
+    });
+
     if (this.data.users.length !== initialCount) {
-      this.data.investments = this.data.investments.filter(i => i.userId !== id);
-      this.data.deposits = this.data.deposits.filter(d => d.userId !== id);
-      this.data.withdrawals = this.data.withdrawals.filter(w => w.userId !== id);
-      this.data.notifications = this.data.notifications.filter(n => n.userId !== id);
+      this.data.investments = (this.data.investments || []).filter(i => String(i.userId || '').trim() !== targetId);
+      this.data.deposits = (this.data.deposits || []).filter(d => String(d.userId || '').trim() !== targetId);
+      this.data.withdrawals = (this.data.withdrawals || []).filter(w => String(w.userId || '').trim() !== targetId);
+      this.data.notifications = (this.data.notifications || []).filter(n => String(n.userId || '').trim() !== targetId);
       this.saveData();
 
       if (this.mongoConnected) {
-        UserModel.deleteOne({ id }).catch(() => {});
-        InvestmentModel.deleteMany({ userId: id }).catch(() => {});
-        DepositModel.deleteMany({ userId: id }).catch(() => {});
-        WithdrawalModel.deleteMany({ userId: id }).catch(() => {});
-        NotificationModel.deleteMany({ userId: id }).catch(() => {});
+        UserModel.deleteMany({ $or: [{ id: targetId }, { _id: targetId }] }).catch(() => {});
+        InvestmentModel.deleteMany({ userId: targetId }).catch(() => {});
+        DepositModel.deleteMany({ userId: targetId }).catch(() => {});
+        WithdrawalModel.deleteMany({ userId: targetId }).catch(() => {});
+        NotificationModel.deleteMany({ userId: targetId }).catch(() => {});
       }
       return true;
     }

@@ -778,21 +778,23 @@ app.post('/api/admin/users', authenticateToken, requireAdmin, (req, res) => {
 
 app.delete('/api/admin/users/:id', authenticateToken, requireAdmin, (req, res) => {
   try {
-    const targetUserId = req.params.id;
-    if (req.user && req.user.id === targetUserId) {
+    const targetUserId = String(req.params.id || '').trim();
+    const currentAdminId = req.user ? String(req.user.id || req.user._id || '').trim() : '';
+
+    if (currentAdminId && currentAdminId === targetUserId) {
       res.status(400).json({ error: 'Etazewe gusiba konti yawe ya Admin ubwawe!' });
       return;
     }
 
     const success = db.deleteUser(targetUserId);
     if (!success) {
-      res.status(404).json({ error: 'Umushoramari cyangwa Agent ntiyabonetse' });
+      res.status(404).json({ error: 'Umushoramari cyangwa Agent ntiyabonetse muri database' });
       return;
     }
 
-    res.json({ message: 'Umukiriya / Agent wasibwe neza!' });
+    res.json({ message: 'Umukoresha wasibwe neza muri database!' });
   } catch (error) {
-    res.status(500).json({ error: error.message || 'Gusiba umukiriya byananiwe' });
+    res.status(500).json({ error: error.message || 'Gusiba umukoresha byananiwe' });
   }
 });
 
